@@ -1,8 +1,10 @@
 '''
 TO DO:
     - DONE [check if all colours in guess are in the actual allowed colours]
-    - make it so the program can overwrite the output file (doesn't need the file to be empty)
-    - check there are enough guesses to cover the game (6 guesses)
+    - DONE [make it so the program can overwrite the output file (doesn't need the file to be empty)]
+    - DONE [check there are enough guesses to cover the game (6 guesses)]
+    - make the code able to take codes that are not 3 long e.g. accept codes that are 4 colours
+    - DONE [if code contains colours not in the variable add them as allowed colours]
 
 '''
 
@@ -15,8 +17,8 @@ class Game:
         self.player = None
         self.guess = None
         self.game_over = False
-        self.__input = open('inputexample3.txt', 'r')
-        self.__output = open('outputexample3.txt', 'w')
+        self.__input = 'inputexample5.txt'
+        self.__output = open('outputexample5.txt', 'w')
         self.black = 0
         self.white = 0
         self.guess_count = 0
@@ -24,10 +26,12 @@ class Game:
     
     #function that reads the winning code, and whether player is human or computer 
     def read_code_player(self):
-        self.code = self.__input.readline().split(' ')[1:4]
+        with open (self.__input, 'r') as file:
+            self.code = file.readline().split(' ')[1:4]
+            print(self.code)
 #        self.code = ' '.join(self.code)
-        self.player = self.__input.readline().split(' ')[1]
-        self.player = self.player.strip('\n')
+            self.player = file.readline().split(' ')[1]
+            self.player = self.player.strip('\n')
     
     #function to write to terminal based on the guess, different outputs based on input x
     def write_to_output(self, x):
@@ -44,9 +48,9 @@ class Game:
             print('congrats')
             self.__output.write('You won in ' + str(self.guess_count) + ' guesses. Congratulations \n')
         elif x == 5:
-            self.__output.write('The game was completed. Further lines were ignored.')
+            self.__output.write('The game was completed. Further lines were ignored. \n')
         elif x == 6:
-            self.__output.write('You lost. Please try again.')
+            self.__output.write('You lost. Please try again. \n')
     
     def is_guess(self, guess):
         for colour in self.guess:
@@ -56,9 +60,10 @@ class Game:
 
     #function to read guess from file and format correctly, also skipping turn if guess is not formatted correctly
     def read_guess(self):
-        self.guess = self.__input.readline().split(' ')[:]
+        with open(self.__input, 'r') as file:
+            self.guess = file.readline().split(' ')[:]
         #print(self.guess)
-        self.guess = [colour.rstrip('\n') for colour in self.guess if colour.rstrip('\n')] #this line strips \n from the elements and removes empty elements from array so it can processed
+            self.guess = [colour.rstrip('\n') for colour in self.guess if colour.rstrip('\n')] #this line strips \n from the elements and removes empty elements from array so it can processed
         #print(self.guess)
         if len(self.guess) > 3:
             self.guess_count += 1
@@ -97,13 +102,19 @@ class Game:
                     elif self.guess[i] in self.code:
                         self.white += 1
             self.write_to_output(1)
+    
+    def add_colour_from_code(self):#this adds the colour from the code if not already in colours list
+        for colour in self.code:
+            if colour not in self.colours:
+                self.colours.append(colour)
+        print(self.colours)
 
 
 
     #this function calls all other classes and runs the main game loop
     def Initliase(self):
         #below checks whether there is enough guesses in the file and if not calls the write function and exits the game loop
-        with self.__input as file:
+        with open(self.__input, 'r') as file:
             line_count = sum(1 for line in file if line.strip())
         print('line count is:', line_count)
         if (line_count - 2) < 6:
@@ -112,7 +123,9 @@ class Game:
             return False
         
 
+
         self.read_code_player()
+        self.add_colour_from_code()
         count = 0
         while not self.game_over and count < 6:
             count += 1
