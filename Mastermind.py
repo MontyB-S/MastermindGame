@@ -1,42 +1,46 @@
+import sys
+
 '''
 TO DO:
     - DONE [check if all colours in guess are in the actual allowed colours]
     - DONE [make it so the program can overwrite the output file (doesn't need the file to be empty)]
     - DONE [check there are enough guesses to cover the game (6 guesses)]
-    - make the code able to take codes that are not 3 long e.g. accept codes that are 4 colours
+    - DONE [make the code able to take codes that are not 3 long e.g. accept codes that are 4 colours]
+    - DONE [make it so that it can be run from terminal]
     - DONE [if code contains colours not in the variable add them as allowed colours]
+    - make the code work for codes longer than 3 for the black and white outputs 
 
 '''
 
-
-
 class Game:
     #Init variables for class, __ are private and should not be changed later 
-    def __init__(self, available_colours = ['red', 'blue', 'yellow', 'green', 'orange']):
+    def __init__(self, input_file, output_file, code, no_of_guesses, colours):
         self.code = None
         self.player = None
         self.guess = None
         self.game_over = False
-        self.__input = 'inputexample5.txt'
-        self.__output = open('outputexample5.txt', 'w')
+        self.__input = input_file
+        self.open_input = open(input_file, 'r')
+        self.__output = open(output_file, 'w')
+        self.line_of_codes = code
+        self.no_of_guesses = no_of_guesses
         self.black = 0
         self.white = 0
         self.guess_count = 0
-        self.colours = available_colours
+        self.colours = colours
     
     #function that reads the winning code, and whether player is human or computer 
     def read_code_player(self):
-        with open (self.__input, 'r') as file:
-            self.code = file.readline().split(' ')[1:4]
-            print(self.code)
-#        self.code = ' '.join(self.code)
-            self.player = file.readline().split(' ')[1]
-            self.player = self.player.strip('\n')
+        self.code = self.open_input.readline().split(' ')[1:]
+        self.code = [i.rstrip('\n') for i in self.code if i.rstrip('\n')]
+        print(self.code)
+        #self.code = ' '.join(self.code)
+        self.player = self.open_input.readline().split(' ')[1]
+        self.player = self.player.strip('\n')
     
     #function to write to terminal based on the guess, different outputs based on input x
     def write_to_output(self, x):
         if x == 1:
-            print('being called')
             self.__output.write('Guess ' + str(self.guess_count) + ': ' + ('black ' * self.black) + ('white ' * self.white) + '\n')
             self.black = 0
             self.white = 0
@@ -45,14 +49,13 @@ class Game:
         elif x == 3:
             self.__output.write('Guess ' + str(self.guess_count) + ': Ill-formed guess provided \n')
         elif x == 4:
-            print('congrats')
             self.__output.write('You won in ' + str(self.guess_count) + ' guesses. Congratulations \n')
         elif x == 5:
             self.__output.write('The game was completed. Further lines were ignored. \n')
         elif x == 6:
             self.__output.write('You lost. Please try again. \n')
     
-    def is_guess(self, guess):
+    def is_guess_in_colour(self): #if the colour isn't in availabe colours
         for colour in self.guess:
             if colour not in self.colours:
                 return False
@@ -60,24 +63,22 @@ class Game:
 
     #function to read guess from file and format correctly, also skipping turn if guess is not formatted correctly
     def read_guess(self):
-        with open(self.__input, 'r') as file:
-            self.guess = file.readline().split(' ')[:]
-        #print(self.guess)
-            self.guess = [colour.rstrip('\n') for colour in self.guess if colour.rstrip('\n')] #this line strips \n from the elements and removes empty elements from array so it can processed
-        #print(self.guess)
-        if len(self.guess) > 3:
+
+        self.guess = self.open_input.readline().split(' ')[:]
+        self.guess = [colour.rstrip('\n') for colour in self.guess if colour.rstrip('\n')] #this line strips \n from the elements and removes empty elements from array so it can processed
+        print('guess', self.guess)
+        if len(self.guess) != len(self.code):
             self.guess_count += 1
             self.write_to_output(3)
             self.guess = 'skip'
-            #print(self.guess)
-        if not self.is_guess(self.guess) and self.guess != 'skip':
+            print('3', self.guess_count)
+        if not self.is_guess_in_colour() and self.guess != 'skip': #if guess not in avaialbe colours
             self.write_to_output(3)
             self.guess = 'skip'
-        else:
+        elif self.guess != 'skip':
             self.guess_count += 1
+            print('else', self.guess_count)
 
-
-    
     #function to check whether guess is same as code, and if not displays the relevant black and white counters. 
     def check_guess(self):
         if self.guess == 'skip':
@@ -93,7 +94,7 @@ class Game:
             if self.guess.count(self.guess[0]) == 3: #if the guess is all the same colour then check in the code how much of the colour appears and add it to the self.black variable
                 self.black = self.black + self.code.count(self.guess[0])
             else:
-                for i in range(3):
+                for i in range(len(self.code)): #change this from 3 to the length of the code
                     if self.guess[i] == self.code[i]:
                         self.black += 1
                     elif self.guess[i] == most_common_element:
@@ -107,7 +108,6 @@ class Game:
         for colour in self.code:
             if colour not in self.colours:
                 self.colours.append(colour)
-        print(self.colours)
 
 
 
@@ -116,34 +116,50 @@ class Game:
         #below checks whether there is enough guesses in the file and if not calls the write function and exits the game loop
         with open(self.__input, 'r') as file:
             line_count = sum(1 for line in file if line.strip())
-        print('line count is:', line_count)
-        if (line_count - 2) < 6:
-            self.write_to_output(2)
-            self.game_over = True
-            return False
-        
-
-
+    
         self.read_code_player()
         self.add_colour_from_code()
         count = 0
-        while not self.game_over and count < 6:
+        while not self.game_over and count < self.no_of_guesses:
             count += 1
-        #Put this inside a while loop that checks if game is over
             if self.player == 'human':
                 self.read_guess()
                 self.check_guess()
-            print(count)
-        if count >= 6 and not self.game_over: #if taken 6 guesses and not won print losing message
+
+        if count >= self.no_of_guesses and not self.game_over: #if taken max guesses and not won print losing message
             self.game_over = True
             self.write_to_output(6)
 
-        print(line_count)
+
         if (line_count-2) > count: #if the game is over and there is more guesses then output ignore message
             self.write_to_output(5)
 
 
 
 if __name__ == "__main__":
-    x = Game()
+
+    number_guess = 6
+    colours = ['red', 'blue', 'yellow', 'green', 'orange']
+    if len(sys.argv) > 1:
+        input_file = sys.argv[1]
+    if len(sys.argv) > 2:    
+        output_file = sys.argv[2]
+    if len(sys.argv) > 3:
+        code_line = sys.argv[3]
+    if len(sys.argv) > 4:
+        number_guess = int(sys.argv[4])
+    if len(sys.argv) > 5:
+        colours = sys.argv[5:]
+
+    x = Game(input_file, output_file, code_line, number_guess, colours)
     x.Initliase()
+
+'''
+
+
+        if (line_count - 2) < self.no_of_guesses: #this function is not needed i think
+            self.write_to_output(2)
+            self.game_over = True
+            return False
+
+'''

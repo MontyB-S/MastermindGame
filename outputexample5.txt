@@ -1,8 +1,9 @@
 Guess 1: Ill-formed guess provided 
-Guess 3: Ill-formed guess provided 
-Guess 5: Ill-formed guess provided 
-Guess 7: Ill-formed guess provided 
-Guess 9: Ill-formed guess provided 
-Guess 11: Ill-formed guess provided 
-You lost. Please try again. 
-The game was completed. Further lines were ignored. 
+Guess 2: black white white white 
+Guess 3: black black white white 
+Guess 4: white white 
+Guess 5: white white white 
+Guess 6: Ill-formed guess provided 
+Guess 7: black black white white 
+Guess 8: black black black 
+You won in 8 guesses. Congratulations 
