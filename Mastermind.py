@@ -1,5 +1,4 @@
 import sys
-import itertools
 import random
 '''
 TO DO:
@@ -35,7 +34,6 @@ class Game:
         self.colours = colours
         self.code_line = code
     
-
     def read_code_player(self):
         '''function that reads the winning code, and whether player is human or computer'''
         self.code = self.open_input.readline().split(' ')[1:]
@@ -43,7 +41,6 @@ class Game:
         self.player = self.open_input.readline().split(' ')[1]
         self.player = self.player.strip('\n')
     
-
     def write_to_output(self, x):
         '''function to write to terminal based on the guess, different outputs based on input x'''
         #below stays as elif statements instead of match to support older versions of python
@@ -69,7 +66,6 @@ class Game:
                 return False
         return True
 
-
     def read_guess(self):
         '''function to read guess from file and format correctly, also skipping turn if guess is not formatted correctly'''
         self.guess = self.open_input.readline().split(' ')[:]
@@ -86,7 +82,6 @@ class Game:
         elif self.guess != 'skip':
             self.guess_count += 1
 
-    
     def find_most_common_elements(self):
         '''for each guess return the element(s) which occur the most'''
         most_common_element = []
@@ -99,8 +94,6 @@ class Game:
                 most_common_element.append(guess)
         return most_common_element
             
-
-    
     def check_guess(self):
         '''function to check whether guess is same as code, and if not displays the relevant black and white counters. '''
         if self.guess == 'skip':
@@ -127,8 +120,6 @@ class Game:
                     elif self.guess[i] in self.code:
                         self.white += 1
             self.write_to_output(1)
-
-
 
     def Initliase(self):
         '''this function calls all other classes and runs the main game loop'''
@@ -187,8 +178,6 @@ class Game:
     def write_guess_to_file(self, file):
         guess_str = ' '.join(str(guess) for guess in self.guess)
         file.write(f'{guess_str}\n')
-    
-
 
 
 if __name__ == "__main__":
