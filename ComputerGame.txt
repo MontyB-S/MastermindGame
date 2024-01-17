@@ -1,12 +1,12 @@
 code red blue yellow
 player human
-yellow orange green
-blue red yellow
-yellow blue orange
-green blue blue
+orange blue blue
+orange yellow red
+green red orange
 green orange red
-green red green
-green red green
-orange red orange
-orange green blue
-orange blue yellow
+blue green red
+orange yellow green
+yellow red yellow
+green yellow red
+green green blue
+yellow yellow green
