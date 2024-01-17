@@ -1,4 +1,6 @@
 import sys
+import itertools
+import random
 '''
 TO DO:
     - DONE [check if all colours in guess are in the actual allowed colours]
@@ -9,6 +11,9 @@ TO DO:
     - DONE [if code contains colours not in the variable add them as allowed colours]
     - DONE [make the code work for codes longer than 3 for the black and white outputs]
     - change the elif to case statements
+    - write the computer code 
+    - make the computer output file additional ComputerGame.txt with its guesses
+    - find out what code length parameter is 
 
 '''
 
@@ -141,23 +146,53 @@ class Game:
         self.read_code_player()
         self.add_colour_from_code()
         count = 0
-        while not self.game_over and count < self.no_of_guesses and count < guesses_in_file:
-            count += 1
-            if self.player == 'human':
+
+        if self.player == 'human':
+            while not self.game_over and count < self.no_of_guesses and count < guesses_in_file:
+                count += 1
+
                 self.read_guess()
                 self.check_guess()
 
-        if count >= guesses_in_file: 
-            self.game_over = True
-            self.write_to_output(6)
+            if count >= guesses_in_file: 
+                self.game_over = True
+                self.write_to_output(6)
+            
+            if count >= self.no_of_guesses and not self.game_over: #if taken max guesses and not won print losing message
+                self.game_over = True
+                self.write_to_output(6)
+
+            if (line_count-2) > count: #if the game is over and there is more guesses then output ignore message
+                self.write_to_output(5)
         
-        if count >= self.no_of_guesses and not self.game_over: #if taken max guesses and not won print losing message
-            self.game_over = True
-            self.write_to_output(6)
+        if self.player == 'computer':
+            with open('ComputerGame.txt', 'w') as file:
+                code_str = ' '.join(str(code) for code in self.code)
+                file.write(f'code {code_str}\n')
+                file.write('player human\n')
+                print(self.no_of_guesses)
+                count = 0
+                while not self.game_over and count < self.no_of_guesses:
+                    count += 1
+                    self.comp_guess()
+                    self.write_guess_to_file(file)
+                    self.check_guess()
+                if count >= self.no_of_guesses:
+                    self.game_over = True
+                    self.write_to_output(6)
 
+    #below is the code for the computer
+    def comp_guess(self):
+        self.guess = []
+        for _ in range(len(self.code)):
+            self.guess.append(random.choice(self.colours))
+        self.guess_count += 1
 
-        if (line_count-2) > count: #if the game is over and there is more guesses then output ignore message
-            self.write_to_output(5)
+    def write_guess_to_file(self, file):
+        guess_str = ' '.join(str(guess) for guess in self.guess)
+        file.write(f'{guess_str}\n')
+    
+
 
 
 if __name__ == "__main__":
