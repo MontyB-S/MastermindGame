@@ -1,20 +1,5 @@
 import sys
 import random
-'''
-TO DO:
-    - DONE [check if all colours in guess are in the actual allowed colours]
-    - DONE [make it so the program can overwrite the output file (doesn't need the file to be empty)]
-    - DONE [check there are enough guesses to cover the game (6 guesses)]
-    - DONE [make the code able to take codes that are not 3 long e.g. accept codes that are 4 colours]
-    - DONE [make it so that it can be run from terminal]
-    - DONE [if code contains colours not in the variable add them as allowed colours]
-    - DONE [make the code work for codes longer than 3 for the black and white outputs]
-    - change the elif to case statements
-    - DONE [write the computer code fixed code]
-    - DONE [make the computer output file additional ComputerGame.txt with its guesses]
-    - DONE [find out what code length parameter is]
-
-'''
 
 class Game:
     def __init__(self, input_file, output_file, code, no_of_guesses, colours):
@@ -50,6 +35,7 @@ class Game:
             self.white = 0
         elif x == 2:
             self.__output.write('No or ill-formed code provided.')
+            sys.exit('No or ill-formed code provided.')
         elif x == 3:
             self.__output.write('Guess ' + str(self.guess_count) + ': Ill-formed guess provided \n')
         elif x == 4:
@@ -58,6 +44,9 @@ class Game:
             self.__output.write('The game was completed. Further lines were ignored. \n')
         elif x == 6:
             self.__output.write('You lost. Please try again. \n')
+        elif x == 7:
+            self.__output.write('No or ill-formed player provided. \n')
+            sys.exit('No or ill-formed player provided.')
     
     def is_guess_in_colour(self): 
         '''checks if each colour in guess is in allowed list of colours'''
@@ -142,7 +131,6 @@ class Game:
                 self.check_guess()
 
             if count >= guesses_in_file and not self.game_over: 
-                print('called')
                 self.game_over = True
                 self.write_to_output(6)
             
@@ -152,8 +140,7 @@ class Game:
 
             if (line_count-2) > count: #if the game is over and there is more guesses then output ignore message
                 self.write_to_output(5)
-        
-        if self.player == 'computer':
+        elif self.player == 'computer':
             with open('ComputerGame.txt', 'w') as file:
                 code_str = ' '.join(str(code) for code in self.code)
                 file.write(f'code {code_str}\n')
@@ -167,6 +154,9 @@ class Game:
                 if count >= self.no_of_guesses:
                     self.game_over = True
                     self.write_to_output(6)
+        else:
+            self.write_to_output(7)
+
 
     #below is the code for the computer
     def comp_guess(self):
