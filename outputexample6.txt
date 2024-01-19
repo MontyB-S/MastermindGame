@@ -2,4 +2,3 @@ Guess 1:
 Guess 2: 
 Guess 3: black 
 You lost. Please try again. 
-No or ill-formed player provided. 

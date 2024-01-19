@@ -9,8 +9,6 @@ class Game:
         self.guess = None
         self.game_over = False
         self.__input = input_file
-        self.open_input = open(input_file, 'r')
-        self.__output = open(output_file, 'w')
         self.line_of_codes = code
         self.no_of_guesses = no_of_guesses
         self.black = 0
@@ -18,6 +16,15 @@ class Game:
         self.guess_count = 0
         self.colours = colours
         self.code_line = code
+
+        try:
+            self.open_input = open(input_file, 'r')
+        except:
+            sys.exit('2: There was an issue with the input file')
+        try:
+            self.__output = open(output_file, 'w')
+        except:
+            sys.exit('3: There was an issue with the output file')
     
     def read_code_player(self):
         '''function that reads the winning code, and whether player is human or computer'''
@@ -35,7 +42,7 @@ class Game:
             self.white = 0
         elif x == 2:
             self.__output.write('No or ill-formed code provided.')
-            sys.exit('No or ill-formed code provided.')
+            sys.exit('4: No or ill-formed code provided')
         elif x == 3:
             self.__output.write('Guess ' + str(self.guess_count) + ': Ill-formed guess provided \n')
         elif x == 4:
@@ -46,7 +53,7 @@ class Game:
             self.__output.write('You lost. Please try again. \n')
         elif x == 7:
             self.__output.write('No or ill-formed player provided. \n')
-            sys.exit('No or ill-formed player provided.')
+            sys.exit('5: No or ill-formed player provided')
     
     def is_guess_in_colour(self): 
         '''checks if each colour in guess is in allowed list of colours'''
@@ -92,6 +99,7 @@ class Game:
             self.black = len(self.code)
             self.write_to_output(1)
             self.write_to_output(4)
+            sys.exit('0: The programme ran successfully')
         else:
             most_common_element = self.find_most_common_elements()
             if self.guess.count(self.guess[0]) == len(self.code): #if the guess is all the same colour then check in the code how much of the colour appears and add it to the self.black variable
@@ -124,7 +132,7 @@ class Game:
             if (line_count - 2) < int(self.code_line):
                 self.write_to_output(2)
                 self.game_over = True
-                sys.exit()
+                sys.exit('1: Not enough programme arguments provided')
             while not self.game_over and count < self.no_of_guesses and count < guesses_in_file:
                 count += 1
                 self.read_guess()
@@ -133,13 +141,17 @@ class Game:
             if count >= guesses_in_file and not self.game_over: 
                 self.game_over = True
                 self.write_to_output(6)
+                sys.exit('0: The programme ran successfully')
             
             if count >= self.no_of_guesses and not self.game_over: #if taken max guesses and not won print losing message
                 self.game_over = True
                 self.write_to_output(6)
+                sys.exit('0: The programme ran successfully')
 
             if (line_count-2) > count: #if the game is over and there is more guesses then output ignore message
                 self.write_to_output(5)
+                sys.exit('0: The programme ran successfully')
+
         elif self.player == 'computer':
             with open('ComputerGame.txt', 'w') as file:
                 code_str = ' '.join(str(code) for code in self.code)
@@ -154,6 +166,8 @@ class Game:
                 if count >= self.no_of_guesses:
                     self.game_over = True
                     self.write_to_output(6)
+                    sys.exit('0: The programme ran successfully')
+                    
         else:
             self.write_to_output(7)
 
